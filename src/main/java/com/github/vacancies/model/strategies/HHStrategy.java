@@ -1,5 +1,6 @@
-package com.github.vacancies.model;
+package com.github.vacancies.model.strategies;
 
+import com.github.vacancies.model.Strategy;
 import com.github.vacancies.vo.Vacancy;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -42,6 +43,7 @@ public class HHStrategy implements Strategy {
                 } else {
                     break;
                 }
+                System.out.println(page + " : " + elements.isEmpty() + " : " + list.size() + " : " + String.format(URL_FORMAT, searchString, page));
             } catch (IOException e) {
                 e.printStackTrace();
             }

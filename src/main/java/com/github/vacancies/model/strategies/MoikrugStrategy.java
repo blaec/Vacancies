@@ -1,5 +1,6 @@
-package com.github.vacancies.model;
+package com.github.vacancies.model.strategies;
 
+import com.github.vacancies.model.Strategy;
 import com.github.vacancies.vo.Vacancy;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

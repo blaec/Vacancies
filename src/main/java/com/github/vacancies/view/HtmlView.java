@@ -13,7 +13,7 @@ import java.util.List;
 
 public class HtmlView implements View {
     private Controller controller;
-    private final String filePath = "C:\\Users\\blaec\\Documents\\javaProjects\\Vacancies\\src\\main\\java\\com\\github\\vacancies\\view\\vacancies.html";
+    private static final String filePath = "C:\\Users\\blaec\\Documents\\javaProjects\\Vacancies\\src\\main\\java\\com\\github\\vacancies\\view\\vacancies.html";
 //    private final String filePath = "./src/" + this.getClass().getPackage().getName().replaceAll("\\.", "/") + "/vacancies.html";
 
     @Override
@@ -27,7 +27,7 @@ public class HtmlView implements View {
 
 
     private String getUpdatedFileContent(List<Vacancy> vacancies) {
-        Document document = null;
+        Document document;
 
         try {
             document = getDocument();
@@ -74,7 +74,7 @@ public class HtmlView implements View {
     }
 
     public void userCitySelectEmulationMethod() {
-        controller.onCitySelect("Dnepropetrovsk");
+        controller.onCitySelect("add_city_name_here");
     }
 
     protected Document getDocument() throws IOException
