@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AJStrategy implements Strategy {
-    private static final String URL_FORMAT = "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=%d&position=1153&type=4&city=&region=";
+public class JMStrategy implements Strategy {
+    private static final String URL_FORMAT = "https://www.jobmaster.co.il/code/check/search.asp?currPage=%d&q=תוכנה+java&l=";
 
     @Override
     public List<Vacancy> getVacancies(String searchString) {
@@ -22,16 +22,14 @@ public class AJStrategy implements Strategy {
         while (true) {
             try {
                 Document doc = getDocument(searchString, page);
-                Elements elements = doc.getElementsByClass("job-content-top");
+                Elements elements = doc.getElementsByAttributeValueContaining("class", "CardStyle JobItem font14");
                 if (!elements.isEmpty()) {
                     for (Element element : elements) {
                         Vacancy vacancy = new Vacancy();
-                        vacancy.setTitle(getElementText(element, "N", "title"));
-                        vacancy.setCity(getElementText(element, "job-content-top-location", "href"));
-                        if (vacancy.getCity().isEmpty())
-                            vacancy.setCity(getElementText(element, "job-content-top-location-ltr", "href"));
-                        vacancy.setCompanyName(getElementText(element, "T14", "href"));
-                        vacancy.setSalary(element.getElementsByAttributeValue("class", "job-content-top-date").text());
+                        vacancy.setTitle(getElementText(element, "CardHeader", null));
+                        vacancy.setCity(getElementText(element, "jobLocation", null));
+                        vacancy.setCompanyName(getElementText(element, "font14 ByTitle", null));
+                        vacancy.setSalary(getElementText(element, "jobSalary", null));
                         vacancy.setUrl("https://www.alljobs.co.il" + element.select("a[class=N]").select("a[title]").attr("href"));
                         vacancy.setSiteName(URL_FORMAT);
                         list.add(vacancy);
@@ -40,9 +38,7 @@ public class AJStrategy implements Strategy {
                     break;
                 }
                 System.out.println(page + " : " + elements.isEmpty() + " : " + list.size() + " : " + String.format(URL_FORMAT, page));
-                if (elements.size() < 15){
-                    break;
-                }
+                if (page > 20) break;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -53,7 +49,11 @@ public class AJStrategy implements Strategy {
     }
 
     private String getElementText(Element element, String className, String aElement) {
-        return element.getElementsByAttributeValue("class", className).select("a[" + aElement + "]").text();
+        if (aElement != null) {
+            return element.getElementsByAttributeValue("class", className).select("a[" + aElement + "]").text();
+        } else {
+            return element.getElementsByAttributeValue("class", className).text();
+        }
     }
 
     protected Document getDocument(String searchString, int page) throws IOException {
