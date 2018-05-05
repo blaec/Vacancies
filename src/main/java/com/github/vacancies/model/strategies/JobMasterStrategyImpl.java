@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JMStrategy implements Strategy {
+import static com.github.vacancies.util.JsoupUtil.getDocument;
+
+public class JobMasterStrategyImpl implements Strategy {
     private static final String URL_FORMAT = "https://www.jobmaster.co.il/code/check/search.asp?currPage=%d&q=תוכנה+java&l=";
 
     @Override
@@ -21,7 +23,7 @@ public class JMStrategy implements Strategy {
 
         while (true) {
             try {
-                Document doc = getDocument(searchString, page);
+                Document doc = getDocument(URL_FORMAT, page);
                 Elements elements = doc.getElementsByAttributeValueContaining("class", "CardStyle JobItem font14");
                 if (!elements.isEmpty()) {
                     for (Element element : elements) {
@@ -30,7 +32,8 @@ public class JMStrategy implements Strategy {
                         vacancy.setCity(getElementText(element, "jobLocation", null));
                         vacancy.setCompanyName(getElementText(element, "font14 ByTitle", null));
                         vacancy.setSalary(getElementText(element, "jobSalary", null));
-                        vacancy.setUrl("https://www.alljobs.co.il" + element.select("a[class=N]").select("a[title]").attr("href"));
+                        vacancy.setAdded("");
+                        vacancy.setUrl(String.format(URL_FORMAT, page));
                         vacancy.setSiteName(URL_FORMAT);
                         list.add(vacancy);
                     }
@@ -55,14 +58,4 @@ public class JMStrategy implements Strategy {
             return element.getElementsByAttributeValue("class", className).text();
         }
     }
-
-    protected Document getDocument(String searchString, int page) throws IOException {
-        String url = String.format(URL_FORMAT, page);
-
-        return Jsoup.connect(url)
-                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36")
-                .referrer(url)
-                .get();
-    }
-
 }

@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AJStrategy implements Strategy {
+import static com.github.vacancies.util.JsoupUtil.getDocument;
+
+public class AllJobsStrategyImpl implements Strategy {
     private static final String URL_FORMAT = "https://www.alljobs.co.il/SearchResultsGuest.aspx?page=%d&position=1153&type=4&city=&region=";
 
     @Override
@@ -21,7 +23,7 @@ public class AJStrategy implements Strategy {
 
         while (true) {
             try {
-                Document doc = getDocument(searchString, page);
+                Document doc = getDocument(URL_FORMAT, page);
                 Elements elements = doc.getElementsByClass("job-content-top");
                 if (!elements.isEmpty()) {
                     for (Element element : elements) {
@@ -31,7 +33,8 @@ public class AJStrategy implements Strategy {
                         if (vacancy.getCity().isEmpty())
                             vacancy.setCity(getElementText(element, "job-content-top-location-ltr", "href"));
                         vacancy.setCompanyName(getElementText(element, "T14", "href"));
-                        vacancy.setSalary(element.getElementsByAttributeValue("class", "job-content-top-date").text());
+                        vacancy.setSalary(element.getElementsByAttributeValue("class", "salary").text());
+                        vacancy.setAdded(element.getElementsByAttributeValue("class", "job-content-top-date").text());
                         vacancy.setUrl("https://www.alljobs.co.il" + element.select("a[class=N]").select("a[title]").attr("href"));
                         vacancy.setSiteName(URL_FORMAT);
                         list.add(vacancy);
@@ -55,14 +58,4 @@ public class AJStrategy implements Strategy {
     private String getElementText(Element element, String className, String aElement) {
         return element.getElementsByAttributeValue("class", className).select("a[" + aElement + "]").text();
     }
-
-    protected Document getDocument(String searchString, int page) throws IOException {
-        String url = String.format(URL_FORMAT, page);
-
-        return Jsoup.connect(url)
-                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36")
-                .referrer(url)
-                .get();
-    }
-
 }

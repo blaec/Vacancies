@@ -5,8 +5,17 @@ public class Vacancy {
     private String salary;
     private String city;
     private String companyName;
+    private String added;
     private String siteName;
     private String url;
+
+    public String getAdded() {
+        return added;
+    }
+
+    public void setAdded(String added) {
+        this.added = added;
+    }
 
     public String getTitle() {
         return title;

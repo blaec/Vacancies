@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class HtmlView implements View {
     private Controller controller;
@@ -29,6 +30,10 @@ public class HtmlView implements View {
     private String getUpdatedFileContent(List<Vacancy> vacancies) {
         Document document;
 
+        vacancies = vacancies.stream()
+                .distinct()
+                .collect(Collectors.toList());
+
         try {
             document = getDocument();
 
@@ -44,6 +49,7 @@ public class HtmlView implements View {
                 element.getElementsByClass("city").first().text(vacancy.getCity());
                 element.getElementsByClass("companyName").first().text(vacancy.getCompanyName());
                 element.getElementsByClass("salary").first().text(vacancy.getSalary());
+                element.getElementsByClass("added").first().text(vacancy.getAdded());
                 Element link = element.getElementsByTag("a").first();
                 link.text(vacancy.getTitle());
                 link.attr("href", vacancy.getUrl());
